@@ -9,6 +9,7 @@
         - git
         - docker
         - python3
+        - python-pip-whl
         update_cache: yes
     - name: install odocker python 
       pip:
