@@ -1,48 +1,46 @@
 ---
-- name: playbookDocker
-  hosts: all 
-  become: true 
-  tasks: 
-    - name: install_docker 
+- hosts: all
+  become: true
+  tasks:
+    - name: Installation des packages de base pour docker
       apt:
         name:
-        - git
-        - docker
-        - python3
-        - python-pip-whl
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
         update_cache: yes
-    - name: install odocker python 
-      pip:
+
+    # Ajouter la clé gpg pour la sécurité des échanges avec le serveur des packages docker
+    - name: ajout de la cle gpg
+      apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        state: present
+
+    # ajouter le repos pour chercher les packages de docker
+    - name: Ajout de l'adresse du repos pour les packages docker de debian
+      apt_repository:
+        repo: deb https://download.docker.com/linux/debian stretch stable
+        state: present
+    - name: Index new repo into the cache
+      apt:
+        name: "*"
+        state: latest
+        update_cache: yes
+        force_apt_get: yes
+    # installation des composants docker
+    - name: install docker components
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        update_cache: yes
+
+    # démarrage du service
+    - name: start docker service
+      service:
         name: docker
-    - name: src_copy
-      copy: 
-        src: src/*
-        dest: src/
-        mode: '1777'
-        # directory_mode: yes 
-    - name: image_build_worker
-      docker_image:
-        path: ./src/worker
-        name: worker
-        tag: v1
-        push: yes
-    - name: image_build_vote
-      docker_image:
-        path: ./src/vote
-        name: worker
-        tag: v1
-        push: yes
-    - name: image_build_result
-      docker_image:
-        path: ./result
-        name: worker
-        tag: v1
-        push: yes
-
-    # Alternative pour démarer apache2
-    # - name: start_apache2
-    #   service: 
-    #     name: apache2
-    #     status: enabled
-    #     enabled: yes
-
+        state: started
+        enabled: yes
