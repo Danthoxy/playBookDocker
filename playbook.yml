@@ -1,0 +1,47 @@
+---
+- name: playbookDocker
+  hosts: all 
+  become: true 
+  tasks: 
+    - name: install_docker 
+      apt:
+        name:
+        - git
+        - docker
+        - python3
+        update_cache: yes
+    - name: install odocker python 
+      pip:
+        name: docker
+    - name: src_copy
+      copy: 
+        src: src/*
+        dest: src/
+        mode: '1777'
+        # directory_mode: yes 
+    - name: image_build_worker
+      docker_image:
+        path: ./src/worker
+        name: worker
+        tag: v1
+        push: yes
+    - name: image_build_vote
+      docker_image:
+        path: ./src/vote
+        name: worker
+        tag: v1
+        push: yes
+    - name: image_build_result
+      docker_image:
+        path: ./result
+        name: worker
+        tag: v1
+        push: yes
+
+    # Alternative pour démarer apache2
+    # - name: start_apache2
+    #   service: 
+    #     name: apache2
+    #     status: enabled
+    #     enabled: yes
+
