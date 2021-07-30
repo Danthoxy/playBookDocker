@@ -9,10 +9,9 @@
         - git
         - docker
         - python3
-        - pip3
         update_cache: yes
     - name: install odocker python 
-      pip:
+      pip3:
         name: docker
     - name: src_copy
       copy: 
