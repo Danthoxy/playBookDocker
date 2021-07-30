@@ -11,7 +11,7 @@
         - python3
         update_cache: yes
     - name: install odocker python 
-      pip3:
+      pip:
         name: docker
     - name: src_copy
       copy: 
